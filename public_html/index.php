@@ -99,7 +99,7 @@ function hitTheBee() {
 }
 ?>
 
-<?php if ($_SESSION['bees']) { ?>
+<?php if (isset($_SESSION['bees'])) { ?>
     <form method="GET">
         <input type="submit" value="hit-the-bee" name="submit">
     </form>
@@ -141,14 +141,22 @@ if (isset($_GET['submit']) && $_GET['submit'] == 'hit-the-bee') {
 
 } else {
 
-    $bees = $_SESSION['bees'];
+    if (isset($_SESSION['bees'])) {
 
-    foreach ($bees as $value) {
-        echo $value->type . ": " . $value->getHp() . " HP<br/>";
-    }
+        $bees = $_SESSION['bees'];
 
-    if ($_SESSION['hits'] > 0) {
-        echo 'Hits: ' . $_SESSION['hits'];
+        foreach ($bees as $value) {
+            echo $value->type . ": " . $value->getHp() . " HP<br/>";
+        }
+
+        if ($_SESSION['hits'] > 0) {
+            echo 'Hits: ' . $_SESSION['hits'];
+        }
+
+    } else {
+
+        echo '<a href="/?submit=start">START</a>';
+
     }
 
 }
