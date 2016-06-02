@@ -1,6 +1,8 @@
 <?php
 
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 class bee {
 
@@ -58,34 +60,16 @@ class drone extends bee {
 
 }
 
-if(!isset($_GET['submit'])) {
-    $bees = array(
-        new queen(),
-        new worker(),
-        new worker(),
-        new worker(),
-        new worker(),
-        new worker(),
-        new drone(),
-        new drone(),
-        new drone(),
-        new drone(),
-        new drone(),
-        new drone(),
-        new drone(),
-        new drone(),
-        new drone()
-    );
-    $_SESSION['bees'] = $bees;
-}
-
-
 function hitTheBee() {
 
     $bees = $_SESSION['bees'];
 
     if (!$bees) {
-        exit("THE END.");
+
+        echo "COMPLETED WITH <b>" . $_SESSION['hits'] . "</b> HITS";
+        echo '<hr/><a href="/?submit=start">RESTART</a>';
+        exit();
+
     }
 
     $key = array_rand($bees, 1);
@@ -106,30 +90,58 @@ function hitTheBee() {
         echo 'Hits: ' . $_SESSION['hits'];
     }
 
-    echo '<hr/><a href="/">RESTART</a>';
+    if ($bees) {
+        echo '<hr/><a href="/?submit=start">RESTART</a>';
+    }
 
     $_SESSION['bees'] = $bees;
 
 }
 ?>
-    </p>
 
+<?php if ($_SESSION['bees']) { ?>
     <form method="GET">
         <input type="submit" value="hit-the-bee" name="submit">
     </form>
+<?php } ?>
 
 <?php
 
-if (isset($_GET['submit'])) {
+if (isset($_GET['submit']) && $_GET['submit'] == 'hit-the-bee') {
 
-    $_SESSION['hits'] += 1;
+    if ($_SESSION['bees']) {
+        $_SESSION['hits'] += 1;
+    }
 
     hitTheBee();
+
+} elseif (isset($_GET['submit']) && $_GET['submit'] == 'start') {
+
+    $_SESSION['bees'] = array(
+        new queen(),
+        new worker(),
+        new worker(),
+        new worker(),
+        new worker(),
+        new worker(),
+        new drone(),
+        new drone(),
+        new drone(),
+        new drone(),
+        new drone(),
+        new drone(),
+        new drone(),
+        new drone(),
+        new drone()
+    );
+
+    $_SESSION['hits'] = 0;
+
+    header('location: /');
 
 } else {
 
     $bees = $_SESSION['bees'];
-    $_SESSION['hits'] = 0;
 
     foreach ($bees as $value) {
         echo $value->type . ": " . $value->getHp() . " HP<br/>";
